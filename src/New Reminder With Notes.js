@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // always-run-in-app: true; icon-color: deep-green;
 // icon-glyph: magic;
-// New Reminder
+// New Reminder With Notes
 
 const reminder = new Reminder();
 
@@ -27,6 +27,19 @@ isDueDatePrompt.addAction('Yes');
 if (-1 !== (await isDueDatePrompt.present())) {
 	const datePicker = new DatePicker();
 	reminder.dueDate = await datePicker.pickDateAndTime();
+}
+
+const hasNotesPrompt = new Alert();
+hasNotesPrompt.title = 'Any notes to add?';
+hasNotesPrompt.addCancelAction('No');
+hasNotesPrompt.addAction('Yes');
+if (-1 !== (await hasNotesPrompt.present())) {
+	const textFieldPrompt = new Alert();
+	textFieldPrompt.title = 'Notes';
+	textFieldPrompt.addTextField();
+	textFieldPrompt.addAction('OK');
+	await textFieldValue.present();
+	reminder.notes = textFieldPrompt.textFieldValue(0);
 }
 
 reminder.save();
