@@ -14,20 +14,17 @@ titlePrompt.addAction('OK');
 if (-1 === (await titlePrompt.present())) {
 	return;
 }
-if (!titlePrompt.textFieldValue(0) || '' === titlePrompt.textFieldValue(0)) {
+if (!titlePrompt.textFieldValue(0)) {
 	await presentError('Reminder title must be provided');
 	return;
 }
 reminder.title = titlePrompt.textFieldValue(0);
 
-const isDueDatePrompt = new Alert();
-isDueDatePrompt.title = 'Is there a due date?';
-isDueDatePrompt.addCancelAction('No');
-isDueDatePrompt.addAction('Yes');
-if (-1 !== (await isDueDatePrompt.present())) {
-	const datePicker = new DatePicker();
-	reminder.dueDate = await datePicker.pickDateAndTime();
-}
+const datePicker = new DatePicker();
+const dueDate = await datePicker.pickDateAndTime();
+// Set due date rounded to the closest 5 minutes
+const coeff = 1000 * 60 * 5;
+reminder.dueDate = new Date(Math.round(dueDate / coeff) * coeff);
 
 reminder.save();
 
