@@ -21,7 +21,16 @@ if (!titlePrompt.textFieldValue(0)) {
 reminder.title = titlePrompt.textFieldValue(0);
 
 const datePicker = new DatePicker();
-const dueDate = await datePicker.pickDateAndTime();
+let dueDate;
+try {
+	dueDate = await datePicker.pickDateAndTime();
+} catch (ex) {
+	if (ex.message.includes('Date picker was cancelled')) {
+		return;
+	} else {
+		throw ex;
+	}
+}
 // Set due date rounded to the closest 5 minutes
 const coeff = 1000 * 60 * 5;
 reminder.dueDate = new Date(Math.round(dueDate / coeff) * coeff);
