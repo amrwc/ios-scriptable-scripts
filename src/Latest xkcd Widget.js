@@ -34,6 +34,11 @@ if (config.runsInWidget) {
 	Safari.open(imageURL);
 }
 
+/**
+ * @param {object} image The image to display.
+ * @param {string} widgetURL URL for the widget to open.
+ * @return {ListWidget} The newly created widget instance.
+ */
 function createWidget(image, widgetURL) {
 	const widget = new ListWidget();
 	widget.url = widgetURL;
@@ -46,6 +51,10 @@ function createWidget(image, widgetURL) {
 	return widget;
 }
 
+/**
+ * @param {string} size Size of the widget image.
+ * @returns {Array<number>} Width and height of the image.
+ */
 function getDimensions(size) {
 	switch (size) {
 		case 'large':
