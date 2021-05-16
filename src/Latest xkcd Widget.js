@@ -1,12 +1,12 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: gray; icon-glyph: magic;
-// xkcd Widget
+// Latest xkcd Widget
 
 /**
- * xkcd Widget
+ * Latest xkcd Widget
  *
- * Displays an xkcd comic in a widget.
+ * Displays the latest xkcd comic in a widget.
  *
  * It's a modified version of
  * <a href="https://gist.github.com/rudotriton/9d11ce1101ff1269f56844871b3fd536">rudotriton's script</a>.
