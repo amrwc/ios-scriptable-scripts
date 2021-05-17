@@ -18,18 +18,7 @@ const URL_POSTFIX = 'info.0.json';
 // For development, displays the widget if run from the Scriptable app.
 const DEBUG = false;
 
-const latestComicURL = URL_PREFIX + URL_POSTFIX;
-const latestComicRequest = new Request(latestComicURL);
-const { num: latestComicNumber } = await latestComicRequest.loadJSON();
-
-// Comic numbering starts at 1.
-const randomComicNumber = getRandomNumber(1, latestComicNumber);
-const randomComicURL = URL_PREFIX + randomComicNumber + '/' + URL_POSTFIX;
-const randomComicRequest = new Request(randomComicURL);
-const { img: imageURL, title } = await randomComicRequest.loadJSON();
-
-const imageRequest = await new Request(imageURL);
-const image = await imageRequest.loadImage();
+const [image, title, imageURL] = await getRandomComic();
 
 if (config.runsInWidget) {
 	// Create and show the widget on home screen.
@@ -41,6 +30,28 @@ if (config.runsInWidget) {
 	await widget.presentLarge();
 } else {
 	Safari.open(imageURL);
+}
+
+/** @return {Array<Image, string, string>} Random comic data. */
+async function getRandomComic() {
+	const randomComicNumber = await getRandomComicNumber();
+	const randomComicURL = URL_PREFIX + randomComicNumber + '/' + URL_POSTFIX;
+	const randomComicRequest = new Request(randomComicURL);
+	const { img: imageURL, title } = await randomComicRequest.loadJSON();
+
+	const imageRequest = await new Request(imageURL);
+	const image = await imageRequest.loadImage();
+
+	return [image, title, imageURL];
+}
+
+/** @return {number} Random comic number. */
+async function getRandomComicNumber() {
+	const latestComicURL = URL_PREFIX + URL_POSTFIX;
+	const latestComicRequest = new Request(latestComicURL);
+	const { num: latestComicNumber } = await latestComicRequest.loadJSON();
+	// Comic numbering starts at 1.
+	return getRandomNumber(1, latestComicNumber);
 }
 
 /**
