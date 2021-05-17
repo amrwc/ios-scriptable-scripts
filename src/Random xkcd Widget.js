@@ -15,30 +15,30 @@
 // Info here: https://xkcd.com/json.html
 const URL_PREFIX = 'https://xkcd.com/';
 const URL_POSTFIX = 'info.0.json';
-const URL_LATEST = URL_PREFIX + URL_POSTFIX;
 // For development, displays the widget if run from the Scriptable app.
 const DEBUG = false;
 
-const latestComicRequest = new Request(URL_LATEST);
+const latestComicURL = URL_PREFIX + URL_POSTFIX;
+const latestComicRequest = new Request(latestComicURL);
 const { num: latestComicNumber } = await latestComicRequest.loadJSON();
 
 // Comic numbering starts at 1.
 const randomComicNumber = getRandomNumber(1, latestComicNumber);
 const randomComicURL = URL_PREFIX + randomComicNumber + '/' + URL_POSTFIX;
 const randomComicRequest = new Request(randomComicURL);
-const { img: imageURL } = await randomComicRequest.loadJSON();
+const { img: imageURL, title } = await randomComicRequest.loadJSON();
 
 const imageRequest = await new Request(imageURL);
 const image = await imageRequest.loadImage();
 
 if (config.runsInWidget) {
 	// Create and show the widget on home screen.
-	const widget = createWidget(image, imageURL);
+	const widget = createWidget(image, title, imageURL);
 	Script.setWidget(widget);
 	Script.complete();
 } else if (DEBUG) {
-	const widget = createWidget(image, imageURL);
-	await widget.presentMedium();
+	const widget = createWidget(image, title, imageURL);
+	await widget.presentLarge();
 } else {
 	Safari.open(imageURL);
 }
@@ -53,34 +53,38 @@ function getRandomNumber(min, max) {
 }
 
 /**
- * @param {object} image The image to display.
+ * @param {Image} image The image to display.
+ * @param {string} title Title of the widget.
  * @param {string} widgetURL URL for the widget to open.
  * @return {ListWidget} The newly created widget instance.
  */
-function createWidget(image, widgetURL) {
+function createWidget(image, title, widgetURL) {
 	const widget = new ListWidget();
 	widget.url = widgetURL;
+	widget.refreshAfterDate = getDateIn30Minutes();
 
-	const [width, height] = getDimensions(config.widgetFamily);
-	const widgetImage = widget.addImage(image);
-	widgetImage.imageSize = new Size(width, height);
-	widgetImage.centerAlignImage();
+	// The layout uses two horizontal stacks to be able to centre the title and the image. For some
+	// reason, `WidgetTexts#centerAlignText()` didn't work on home screen.
+	/** @type {WidgetStack} */
+	const titleStack = widget.addStack();
+	titleStack.addSpacer(null);
+	/** @type {WidgetText} */
+	const titleStackText = titleStack.addText(title);
+	titleStackText.font = Font.headline();
+	titleStack.addSpacer(null);
+
+	/** @type {WidgetStack} */
+	const imageStack = widget.addStack();
+	imageStack.addSpacer(null);
+	imageStack.addImage(image);
+	imageStack.addSpacer(null);
 
 	return widget;
 }
 
-/**
- * @param {string} size Size of the widget image.
- * @returns {Array<number>} Width and height of the image.
- */
-function getDimensions(size) {
-	switch (size) {
-		case 'large':
-			return [300, 300];
-		case 'medium':
-			return [300, 150];
-		case 'small':
-		default:
-			return [150, 150];
-	}
+/** @return {Date} Date instance 30 minutes from now. */
+function getDateIn30Minutes() {
+	const nowMs = new Date().getTime();
+	const halfHourMs = 1000 * 60 * 30; // ms * sec * min
+	return new Date(nowMs + halfHourMs);
 }
