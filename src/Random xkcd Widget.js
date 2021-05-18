@@ -8,7 +8,7 @@
  *
  * Displays a random xkcd comic in a widget.
  *
- * It's a modified version of
+ * It's a <em>heavily</em> modified version of
  * <a href="https://gist.github.com/rudotriton/9d11ce1101ff1269f56844871b3fd536">rudotriton's script</a>.
  */
 
@@ -17,22 +17,36 @@ const URL_PREFIX = 'https://xkcd.com/';
 const URL_POSTFIX = 'info.0.json';
 // For development, displays the widget if run from the Scriptable app.
 const DEBUG = false;
+const IS_ONLINE = await checkIsOnline();
 
-const [image, title, imageURL] = await getRandomComic();
+const comic = IS_ONLINE ? await getRandomComic() : undefined;
 
 if (config.runsInWidget) {
 	// Create and show the widget on home screen.
-	const widget = createWidget(image, title, imageURL);
+	const widget = createWidget(comic);
 	Script.setWidget(widget);
 	Script.complete();
 } else if (DEBUG) {
-	const widget = createWidget(image, title, imageURL);
+	const widget = createWidget(comic);
 	await widget.presentLarge();
 } else {
-	Safari.open(imageURL);
+	if (IS_ONLINE && comic?.xkcdURL) {
+		Safari.open(comic.xkcdURL);
+	}
 }
 
-/** @return {Array<Image, string, string>} Random comic data. */
+/** @return {bool} Whether the device has internet access. */
+async function checkIsOnline() {
+	const request = new Request('https://duckduckgo.com');
+	try {
+		await request.load();
+	} catch (exception) {
+		return false;
+	}
+	return true;
+}
+
+/** @return {object} Data of the randomised comic. */
 async function getRandomComic() {
 	const randomComicNumber = await getRandomComicNumber();
 	const randomComicURL = URL_PREFIX + randomComicNumber + '/' + URL_POSTFIX;
@@ -42,7 +56,12 @@ async function getRandomComic() {
 	const imageRequest = await new Request(imageURL);
 	const image = await imageRequest.loadImage();
 
-	return [image, title, imageURL];
+	return {
+		image,
+		title,
+		imageURL,
+		xkcdURL: URL_PREFIX + randomComicNumber,
+	};
 }
 
 /** @return {number} Random comic number. */
@@ -64,31 +83,37 @@ function getRandomNumber(min, max) {
 }
 
 /**
- * @param {Image} image The image to display.
- * @param {string} title Title of the widget.
- * @param {string} widgetURL URL for the widget to open.
+ * Creates a {@link ListWidget} displaying the given comic. If the device is offline, creates an
+ * empty "You're offline" widget.
+ * <p>
+ * NOTE: The layout uses two horizontal stacks to be able to centre the title and the image. For
+ * some reason, `WidgetText#centerAlignText()` didn't work on home screen.
+ * @param {object} comic Data of a randomised comic.
  * @return {ListWidget} The newly created widget instance.
  */
-function createWidget(image, title, widgetURL) {
+function createWidget(comic) {
 	const widget = new ListWidget();
-	widget.url = widgetURL;
-	widget.refreshAfterDate = getDateIn30Minutes();
 
-	// The layout uses two horizontal stacks to be able to centre the title and the image. For some
-	// reason, `WidgetTexts#centerAlignText()` didn't work on home screen.
 	/** @type {WidgetStack} */
 	const titleStack = widget.addStack();
 	titleStack.addSpacer(null);
 	/** @type {WidgetText} */
-	const titleStackText = titleStack.addText(title);
+	const titleStackText = titleStack.addText(
+		IS_ONLINE && comic?.title ? comic.title : "You're offline"
+	);
 	titleStackText.font = Font.headline();
 	titleStack.addSpacer(null);
 
-	/** @type {WidgetStack} */
-	const imageStack = widget.addStack();
-	imageStack.addSpacer(null);
-	imageStack.addImage(image);
-	imageStack.addSpacer(null);
+	if (IS_ONLINE && comic) {
+		/** @type {WidgetStack} */
+		const imageStack = widget.addStack();
+		imageStack.addSpacer(null);
+		imageStack.addImage(comic.image);
+		imageStack.addSpacer(null);
+
+		widget.url = comic.xkcdURL;
+		widget.refreshAfterDate = getDateIn30Minutes();
+	}
 
 	return widget;
 }
