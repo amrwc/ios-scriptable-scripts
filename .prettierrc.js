@@ -10,7 +10,7 @@
 module.exports = {
 	arrowParens: 'avoid',
 	bracketSpacing: true,
-	printWidth: 100,
+	printWidth: 119,
 	quoteProps: 'as-needed',
 	semi: true,
 	singleQuote: true,
