@@ -1,4 +1,4 @@
-class NumberService {
+class NumberUtil {
 
 	/**
 	 * @param {number} min Lower bound.
@@ -11,5 +11,5 @@ class NumberService {
 }
 
 module.exports = {
-	NumberService,
+	NumberUtil,
 }

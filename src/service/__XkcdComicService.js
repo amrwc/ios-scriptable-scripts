@@ -1,7 +1,7 @@
 const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__Const');
-const { FileService } = importModule('__FileService');
-const { ImageService } = importModule('__ImageService');
-const { NumberService } = importModule('__NumberService');
+const { FileUtil } = importModule('__FileUtil');
+const { ImageUtil } = importModule('__ImageUtil');
+const { NumberUtil } = importModule('__NumberUtil');
 
 // Info here: https://xkcd.com/json.html
 const URL_PREFIX = 'https://xkcd.com/';
@@ -40,7 +40,7 @@ class XkcdComicService {
 		const latestComicRequest = new Request(latestComicURL);
 		const { num: latestComicNumber } = await latestComicRequest.loadJSON();
 		// Comic numbering starts at 1.
-		return NumberService.nextInt(1, latestComicNumber);
+		return NumberUtil.nextInt(1, latestComicNumber);
 	}
 
 	/**
@@ -64,8 +64,8 @@ class XkcdComicService {
 			fileManager.remove(cacheFilePath);
 		}
 
-		const imageType = FileService.getFileExtension(comic.imageURL);
-		const base64 = ImageService.base64EncodeImage(comic.image, imageType);
+		const imageType = FileUtil.getFileExtension(comic.imageURL);
+		const base64 = ImageUtil.base64EncodeImage(comic.image, imageType);
 		const comicCacheData = {
 			title: comic.title,
 			xkcdURL: comic.xkcdURL,

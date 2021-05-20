@@ -1,6 +1,6 @@
 const PERIOD = '.';
 
-class FileService {
+class FileUtil {
 
 	/**
 	 * @param {string} path Path to the file.
@@ -13,5 +13,5 @@ class FileService {
 }
 
 module.exports = {
-	FileService,
+	FileUtil,
 }

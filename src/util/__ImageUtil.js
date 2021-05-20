@@ -1,12 +1,12 @@
 /**
  * Service for manipulating images.
  */
-class ImageService {
+class ImageUtil {
 
 	/**
 	 * Base64 encodes the given image.
 	 * @param {Image} image Image data.
-	 * @param {string} type Type of the image ({@code jpg} or {@code png}).
+	 * @param {string} type Type of the image (<code>jpg</code> or <code>png</code>).
 	 * @returns {string} Encoded image, or an empty string if the type is not supported.
 	 */
 	static base64EncodeImage(image, type) {
@@ -27,5 +27,5 @@ class ImageService {
 }
 
 module.exports = {
-	ImageService,
+	ImageUtil,
 }

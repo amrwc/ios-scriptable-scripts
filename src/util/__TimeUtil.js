@@ -1,4 +1,4 @@
-class TimeService {
+class TimeUtil {
 
 	/** @return {Date} Date instance the given number of minutes from now. */
 	static getDateInNMinutes(minutes) {
@@ -9,5 +9,5 @@ class TimeService {
 }
 
 module.exports = {
-	TimeService,
+	TimeUtil,
 }

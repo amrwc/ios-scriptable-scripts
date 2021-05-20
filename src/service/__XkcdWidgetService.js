@@ -1,5 +1,5 @@
 const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__Const');
-const { TimeService } = importModule('__TimeService');
+const { TimeUtil } = importModule('__TimeUtil');
 
 // Whether to cache the downloaded comics locally for offline reuse.
 const ENABLE_LOCAL_CACHE = true;
@@ -33,7 +33,7 @@ class XkcdWidgetService {
 		imageStack.addSpacer(null);
 
 		widget.url = comic.xkcdURL;
-		widget.refreshAfterDate = TimeService.getDateInNMinutes(refreshAfter);
+		widget.refreshAfterDate = TimeUtil.getDateInNMinutes(refreshAfter);
 
 		return widget;
 	}
