@@ -1,6 +1,6 @@
 const TEST_URL = 'https://duckduckgo.com';
 
-module.exports = class NetworkService {
+class NetworkService {
 
 	/**
 	 * @public
@@ -15,4 +15,8 @@ module.exports = class NetworkService {
 		}
 		return true;
 	}
+}
+
+module.exports = {
+	NetworkService,
 }

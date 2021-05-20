@@ -1,4 +1,4 @@
-module.exports = class NumberService {
+class NumberService {
 
 	/**
 	 * @param {number} min Lower bound.
@@ -8,4 +8,8 @@ module.exports = class NumberService {
 	static nextInt(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
+}
+
+module.exports = {
+	NumberService,
 }

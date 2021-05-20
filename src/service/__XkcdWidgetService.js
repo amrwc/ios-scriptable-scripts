@@ -1,10 +1,10 @@
-const Const = importModule('__Const');
-const TimeService = importModule('__TimeService');
+const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__Const');
+const { TimeService } = importModule('__TimeService');
 
 // Whether to cache the downloaded comics locally for offline reuse.
 const ENABLE_LOCAL_CACHE = true;
 
-module.exports = class XkcdWidgetService {
+class XkcdWidgetService {
 
 	/**
 	 * Creates a {@link ListWidget} displaying the given comic.
@@ -41,8 +41,8 @@ module.exports = class XkcdWidgetService {
 	static createOfflineWidget() {
 		const fileManager = FileManager.iCloud();
 		const documentsDir = fileManager.documentsDirectory();
-		const cacheDir = fileManager.joinPath(documentsDir, Const.LOCAL_CACHE_DIRNAME);
-		const cacheFilePath = fileManager.joinPath(cacheDir, Const.XKCD_CACHE_FILENAME);
+		const cacheDir = fileManager.joinPath(documentsDir, LOCAL_CACHE_DIRNAME);
+		const cacheFilePath = fileManager.joinPath(cacheDir, XKCD_CACHE_FILENAME);
 
 		if (!ENABLE_LOCAL_CACHE || !fileManager.fileExists(cacheFilePath)) {
 			const widget = new ListWidget();
@@ -80,4 +80,8 @@ module.exports = class XkcdWidgetService {
 
 		return widget;
 	}
+}
+
+module.exports = {
+	XkcdWidgetService,
 }

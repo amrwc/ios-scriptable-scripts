@@ -1,19 +1,31 @@
-module.exports = class ImageService {
+/**
+ * Service for manipulating images.
+ */
+class ImageService {
 
 	/**
-	 * Base64 encodes the comic image.
-	 * @param {object} comic Comic data.
-	 * @returns {string}} Encode data, or empty string if the image has an unsupported type.
+	 * Base64 encodes the given image.
+	 * @param {Image} image Image data.
+	 * @param {string} type Type of the image ({@code jpg} or {@code png}).
+	 * @returns {string} Encoded image, or an empty string if the type is not supported.
 	 */
-	static base64EncodeImage(comic) {
-		const extension = comic.imageURL.split('.').pop();
-		switch (extension) {
+	static base64EncodeImage(image, type) {
+		let data;
+		switch (type) {
 			case 'jpg':
-				return Data.fromJPEG(comic.image).toBase64String();
+				data = Data.fromJPEG(image);
+				break;
 			case 'png':
-				return Data.fromPNG(comic.image).toBase64String();
+				data = Data.fromPNG(image);
+				break;
 			default:
 				return '';
 		}
+		const base64Str = data?.toBase64String();
+		return base64Str || '';
 	}
+}
+
+module.exports = {
+	ImageService,
 }

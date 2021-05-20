@@ -1,12 +1,13 @@
 const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__Const');
-const ImageService = importModule('__ImageService');
-const NumberService = importModule('__NumberService');
+const { FileService } = importModule('__FileService');
+const { ImageService } = importModule('__ImageService');
+const { NumberService } = importModule('__NumberService');
 
 // Info here: https://xkcd.com/json.html
 const URL_PREFIX = 'https://xkcd.com/';
 const URL_POSTFIX = 'info.0.json';
 
-module.exports = class XkcdComicService {
+class XkcdComicService {
 
 	/**
 	 * @public
@@ -63,7 +64,8 @@ module.exports = class XkcdComicService {
 			fileManager.remove(cacheFilePath);
 		}
 
-		const base64 = ImageService.base64EncodeImage(comic);
+		const imageType = FileService.getFileExtension(comic.imageURL);
+		const base64 = ImageService.base64EncodeImage(comic.image, imageType);
 		const comicCacheData = {
 			title: comic.title,
 			xkcdURL: comic.xkcdURL,
@@ -76,4 +78,8 @@ module.exports = class XkcdComicService {
 		const comicCacheDataStr = JSON.stringify(comicCacheData, null, 4);
 		fileManager.writeString(cacheFilePath, comicCacheDataStr);
 	}
+}
+
+module.exports = {
+	XkcdComicService,
 }
