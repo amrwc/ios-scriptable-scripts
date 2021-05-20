@@ -1,8 +1,6 @@
-const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__Const');
+const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__LocalPath');
+const { XKCD_WIDGET_ENABLE_LOCAL_CACHE } = importModule('__FeatureFlag');
 const { TimeUtil } = importModule('__TimeUtil');
-
-// Whether to cache the downloaded comics locally for offline reuse.
-const ENABLE_LOCAL_CACHE = true;
 
 class XkcdWidgetService {
 
@@ -11,7 +9,7 @@ class XkcdWidgetService {
 	 * <p>
 	 * NOTE: The layout uses horizontal stacks to be able to centre the title and the image. For some
 	 * reason, `WidgetText#centerAlignText()` didn't work on home screen.
-	 * @param {object} comic Data of a randomised comic.
+	 * @param {XkcdComic} comic Data of a randomised comic.
 	 * @param {number} refreshAfter Minimum number of minutes the widget will refresh after.
 	 * @return {ListWidget} The newly created widget instance.
 	 */
@@ -44,7 +42,7 @@ class XkcdWidgetService {
 		const cacheDir = fileManager.joinPath(documentsDir, LOCAL_CACHE_DIRNAME);
 		const cacheFilePath = fileManager.joinPath(cacheDir, XKCD_CACHE_FILENAME);
 
-		if (!ENABLE_LOCAL_CACHE || !fileManager.fileExists(cacheFilePath)) {
+		if (!XKCD_WIDGET_ENABLE_LOCAL_CACHE || !fileManager.fileExists(cacheFilePath)) {
 			const widget = new ListWidget();
 
 			/** @type {WidgetStack} */

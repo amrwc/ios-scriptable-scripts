@@ -1,5 +1,8 @@
 const TEST_URL = 'https://duckduckgo.com';
 
+/**
+ * Internet/network related utility class.
+ */
 class NetworkUtil {
 
 	/**
