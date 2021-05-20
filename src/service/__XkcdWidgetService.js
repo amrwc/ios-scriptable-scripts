@@ -4,7 +4,7 @@ const TimeService = importModule('__TimeService');
 // Whether to cache the downloaded comics locally for offline reuse.
 const ENABLE_LOCAL_CACHE = true;
 
-module.exports = class WidgetService {
+module.exports = class XkcdWidgetService {
 
 	/**
 	 * Creates a {@link ListWidget} displaying the given comic.
@@ -68,7 +68,7 @@ module.exports = class WidgetService {
 			title: cacheData.title,
 			xkcdURL: cacheData.xkcdURL,
 		};
-		const widget = WidgetService.createWidget(comic, 5);
+		const widget = XkcdWidgetService.createWidget(comic, 5);
 
 		/** @type {WidgetStack} */
 		const titleStack = widget.addStack();

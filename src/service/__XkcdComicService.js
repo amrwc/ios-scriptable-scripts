@@ -6,7 +6,7 @@ const NumberService = importModule('__NumberService');
 const URL_PREFIX = 'https://xkcd.com/';
 const URL_POSTFIX = 'info.0.json';
 
-module.exports = class ComicService {
+module.exports = class XkcdComicService {
 
 	/**
 	 * @public

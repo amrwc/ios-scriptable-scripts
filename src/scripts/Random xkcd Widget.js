@@ -13,36 +13,29 @@
  */
 
 // For development purposes. It displays the widget if run from the Scriptable app.
-const DEBUG = true;
+const DEBUG = false;
 
-const ComicService = importModule('__ComicService');
 const NetworkService = importModule('__NetworkService');
-const WidgetService = importModule('__WidgetService');
+const XkcdComicService = importModule('__XkcdComicService');
+const XkcdWidgetService = importModule('__XkcdWidgetService');
 
 const IS_ONLINE = await NetworkService.isOnline();
 
+let comic;
+let widget;
 if (IS_ONLINE) {
-	const comic = await ComicService.getRandomComic();
-	ComicService.cacheComic(comic);
-	if (config.runsInWidget) {
-		// Create and show the widget on home screen.
-		const widget = WidgetService.createWidget(comic);
-		Script.setWidget(widget);
-		Script.complete();
-	} else if (DEBUG) {
-		const widget = WidgetService.createWidget(comic);
-		await widget.presentLarge();
-	} else {
-		Safari.open(comic.xkcdURL);
-	}
+	comic = await XkcdComicService.getRandomComic();
+	XkcdComicService.cacheComic(comic);
+	widget = XkcdWidgetService.createWidget(comic);
 } else {
-	if (config.runsInWidget) {
-		// Create and show the widget on home screen.
-		const widget = WidgetService.createOfflineWidget();
-		Script.setWidget(widget);
-		Script.complete();
-	} else if (DEBUG) {
-		const widget = WidgetService.createOfflineWidget();
-		await widget.presentLarge();
-	}
+	widget = XkcdWidgetService.createOfflineWidget();
+}
+
+if (config.runsInWidget) {
+	Script.setWidget(widget);
+	Script.complete();
+} else if (DEBUG) {
+	await widget.presentLarge();
+} else if (IS_ONLINE) {
+	Safari.open(comic.xkcdURL);
 }
