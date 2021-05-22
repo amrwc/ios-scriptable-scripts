@@ -1,9 +1,16 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-gray; icon-glyph: code;
+
 const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__LocalPath');
 const { FileUtil } = importModule('__FileUtil');
 const { ImageUtil } = importModule('__ImageUtil');
 const { NumberUtil } = importModule('__NumberUtil');
 const { XkcdComic } = importModule('__XkcdComic');
 
+/**
+ * Service for managing xkcd comics.
+ */
 class XkcdComicService {
 
 	/**
@@ -73,4 +80,4 @@ class XkcdComicService {
 
 module.exports = {
 	XkcdComicService,
-}
+};

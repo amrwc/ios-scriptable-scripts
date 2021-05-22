@@ -1,7 +1,14 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-gray; icon-glyph: code;
+
 const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__LocalPath');
 const { XKCD_WIDGET_ENABLE_LOCAL_CACHE } = importModule('__FeatureFlag');
 const { TimeUtil } = importModule('__TimeUtil');
 
+/**
+ * Service for managing xkcd widgets.
+ */
 class XkcdWidgetService {
 
 	/**
@@ -82,4 +89,4 @@ class XkcdWidgetService {
 
 module.exports = {
 	XkcdWidgetService,
-}
+};

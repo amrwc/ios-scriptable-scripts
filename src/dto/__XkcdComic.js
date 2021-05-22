@@ -1,3 +1,7 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-gray; icon-glyph: code;
+
 // Info here: https://xkcd.com/json.html
 const URL_PREFIX = 'https://xkcd.com/';
 const URL_POSTFIX = 'info.0.json';
@@ -40,4 +44,4 @@ class XkcdComic {
 
 module.exports = {
 	XkcdComic,
-}
+};
