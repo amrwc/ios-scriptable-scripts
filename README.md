@@ -7,55 +7,64 @@
 
 1. Save the script as a `.js` file.
 
-    - Optionally, add Scriptable-specific directives at the top, similar to the
-      following:
+   - Optionally, add Scriptable-specific directives at the top, similar to the
+     following:
 
-      ```JavaScript
-      // Variables used by Scriptable.
-      // These must be at the very top of the file. Do not edit.
-      // icon-color: deep-green; icon-glyph: magic;
-      ```
+     ```JavaScript
+     // Variables used by Scriptable.
+     // These must be at the very top of the file. Do not edit.
+     // icon-color: deep-green; icon-glyph: magic;
+     ```
 
-    - The file name is the title of the script in visible the app.
+   - The file name is the title of the script in visible the app.
 
-2. Put the file in the `Scriptable` directory in iCloud Drive.
+1. Put the file in the `Scriptable` directory in iCloud Drive.
 
-The script should be automatically imported inside the Scriptable app.
+   The script should be visible inside the Scriptable app soon after.
+
+1. If using external modules, place them along the scripts. (Read more below.)
 
 ## Importing modules
 
 [There's a module importing functionality](https://docs.scriptable.app/module)
 in the app.
 
-So far, I wasn't able to make nested paths working, so I put all dependencies
-in the main directory along the scripts. They have two underscores prepended in
-their names to be easily distinguishable in the app.
+NOTE: So far, I wasn't able to make nested paths working, so I put all
+dependencies in the main directory along the scripts. They have two underscores
+prepended in their names to be easily distinguishable in the app.
 
 ### Class fields
 
 This doesn't work:
 
 ```javascript
-class Const {
-
-	static LOCAL_CACHE_DIRNAME = 'cache';
+// __FeatureFlag.js
+class FeatureFlag {
+    static LOG_MODULE_IMPORTS = true;
 }
-module.exports = new Const();
+module.exports = FeatureFlag;
 
 // Other file
-const Const = importModule('__Const');
-console.log(Const.LOCAL_CACHE_DIRNAME); // undefined
+const FeatureFlag = importModule('__FeatureFlag');
+console.log(FeatureFlag.LOG_MODULE_IMPORTS); // undefined
 ```
 
 According to [this website](https://javascript.info/class#class-fields), it's
-unsupported in old browsers, which we might be dealing with here.
+unsupported in old browsers, which is what we might be dealing with here.
 
-Instead, put just 'class constants' in `module.exports` directly:
+Instead, place 'class constants' in `module.exports` directly:
 
 ```javascript
-module.exports.LOCAL_CACHE_DIRNAME = 'cache';
+// __FeatureFlag.js
+module.exports = {
+    LOG_MODULE_IMPORTS: true,
+};
 
 // Other file
-const { LOCAL_CACHE_DIRNAME } = importModule('__Const');
-console.log(LOCAL_CACHE_DIRNAME); // 'cache'
+const FeatureFlag = importModule('__FeatureFlag');
+console.log(FeatureFlag.LOG_MODULE_IMPORTS); // true
+
+// Or, more concisely
+const { LOG_MODULE_IMPORTS } = importModule('__FeatureFlag');
+console.log(LOG_MODULE_IMPORTS); // true
 ```
