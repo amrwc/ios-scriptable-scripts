@@ -17,7 +17,7 @@ class XkcdComicService {
 	 * @public
 	 * @returns {Promise<{XkcdComic}>} Random xkcd comic.
 	 */
-	static async getRandomComic() {
+	async getRandomComic() {
 		const randomComicNumber = await this.getRandomComicNumber();
 		const randomComicURL = XkcdComic.getComicRESTURL(randomComicNumber);
 		const randomComicRequest = new Request(randomComicURL);
@@ -34,7 +34,7 @@ class XkcdComicService {
 	 * @public
 	 * @param {XkcdComic} comic Comic data.
 	 */
-	static cacheComic(comic) {
+	cacheComic(comic) {
 		// NOTE: This FileManager instance may not work if iCloud support is disabled as I don't think
 		// it defaults to the `FileManager#local()`.
 		const fileManager = FileManager.iCloud();
@@ -69,7 +69,7 @@ class XkcdComicService {
 	 * @private
 	 * @return {Promise<number>} Random comic number.
 	 */
-	static async getRandomComicNumber() {
+	async getRandomComicNumber() {
 		const latestComicURL = XkcdComic.getLatestComicRESTURL();
 		const latestComicRequest = new Request(latestComicURL);
 		const { num: latestComicNumber } = await latestComicRequest.loadJSON();

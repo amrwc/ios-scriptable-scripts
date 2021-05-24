@@ -20,7 +20,7 @@ class XkcdWidgetService {
 	 * @param {number} refreshAfter Minimum number of minutes the widget will refresh after.
 	 * @return {ListWidget} The newly created widget instance.
 	 */
-	static createWidget(comic, refreshAfter = 30) {
+	createWidget(comic, refreshAfter = 30) {
 		const widget = new ListWidget();
 
 		/** @type {WidgetStack} */
@@ -43,7 +43,7 @@ class XkcdWidgetService {
 		return widget;
 	}
 
-	static createOfflineWidget() {
+	createOfflineWidget() {
 		const fileManager = FileManager.iCloud();
 		const documentsDir = fileManager.documentsDirectory();
 		const cacheDir = fileManager.joinPath(documentsDir, LOCAL_CACHE_DIRNAME);

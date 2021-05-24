@@ -19,16 +19,19 @@ const { NetworkUtil } = importModule('__NetworkUtil');
 const { XkcdComicService } = importModule('__XkcdComicService');
 const { XkcdWidgetService } = importModule('__XkcdWidgetService');
 
+const comicService = new XkcdComicService();
+const widgetService = new XkcdWidgetService();
+
 const IS_ONLINE = await NetworkUtil.isOnline();
 
 let comic;
 let widget;
 if (IS_ONLINE) {
-	comic = await XkcdComicService.getRandomComic();
-	XkcdComicService.cacheComic(comic);
-	widget = XkcdWidgetService.createWidget(comic);
+	comic = await comicService.getRandomComic();
+	comicService.cacheComic(comic);
+	widget = widgetService.createWidget(comic);
 } else {
-	widget = XkcdWidgetService.createOfflineWidget();
+	widget = widgetService.createOfflineWidget();
 }
 
 if (config.runsInWidget) {
