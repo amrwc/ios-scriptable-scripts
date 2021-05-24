@@ -6,6 +6,10 @@ const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__LocalPath')
 const { XKCD_WIDGET_ENABLE_LOCAL_CACHE } = importModule('__FeatureFlag');
 const { TimeUtil } = importModule('__TimeUtil');
 
+const ONLINE_COMIC_TTL = 30;
+const OFFLINE_COMIC_TTL = 5;
+const YOURE_OFFLINE = "You're offline";
+
 /**
  * Service for managing xkcd widgets.
  */
@@ -17,32 +21,22 @@ class XkcdWidgetService {
 	 * NOTE: The layout uses horizontal stacks to be able to centre the title and the image. For some
 	 * reason, `WidgetText#centerAlignText()` didn't work on home screen.
 	 * @param {XkcdComic} comic Data of a randomised comic.
-	 * @param {number} refreshAfter Minimum number of minutes the widget will refresh after.
 	 * @return {ListWidget} The newly created widget instance.
 	 */
-	createWidget(comic, refreshAfter = 30) {
-		const widget = new ListWidget();
-
-		/** @type {WidgetStack} */
-		const titleStack = widget.addStack();
-		titleStack.addSpacer(null);
-		/** @type {WidgetText} */
-		const titleStackText = titleStack.addText(comic.title);
-		titleStackText.font = Font.headline();
-		titleStack.addSpacer(null);
-
-		/** @type {WidgetStack} */
-		const imageStack = widget.addStack();
-		imageStack.addSpacer(null);
-		imageStack.addImage(comic.image);
-		imageStack.addSpacer(null);
-
+	createWidget(comic) {
+		const widget = this.buildWidget(comic.title, ONLINE_COMIC_TTL, comic.image)
 		widget.url = comic.xkcdURL;
-		widget.refreshAfterDate = TimeUtil.getDateInNMinutes(refreshAfter);
-
 		return widget;
 	}
 
+	/**
+	 * Creates a {@link ListWidget} displaying a locally cached comic, or a generic offline notice.
+	 * <p>
+	 * NOTE: The layout uses horizontal stacks to be able to centre the title and the image. For some
+	 * reason, `WidgetText#centerAlignText()` didn't work on home screen.
+	 * @public
+	 * @return {ListWidget} The newly created widget instance.
+	 */
 	createOfflineWidget() {
 		const fileManager = FileManager.iCloud();
 		const documentsDir = fileManager.documentsDirectory();
@@ -50,17 +44,7 @@ class XkcdWidgetService {
 		const cacheFilePath = fileManager.joinPath(cacheDir, XKCD_CACHE_FILENAME);
 
 		if (!XKCD_WIDGET_ENABLE_LOCAL_CACHE || !fileManager.fileExists(cacheFilePath)) {
-			const widget = new ListWidget();
-
-			/** @type {WidgetStack} */
-			const titleStack = widget.addStack();
-			titleStack.addSpacer(null);
-			/** @type {WidgetText} */
-			const titleStackText = titleStack.addText("You're offline");
-			titleStackText.font = Font.headline();
-			titleStack.addSpacer(null);
-
-			return widget;
+			return this.buildWidget(YOURE_OFFLINE, OFFLINE_COMIC_TTL);
 		}
 
 		const cacheDataStr = fileManager.readString(cacheFilePath);
@@ -68,20 +52,47 @@ class XkcdWidgetService {
 
 		const imageData = Data.fromBase64String(cacheData.image.base64);
 		const image = Image.fromData(imageData);
-		const comic = {
-			image,
-			title: cacheData.title,
-			xkcdURL: cacheData.xkcdURL,
-		};
-		const widget = XkcdWidgetService.createWidget(comic, 5);
+
+		const widget = this.buildWidget(cacheData.title, OFFLINE_COMIC_TTL, image)
+
+		/** @type {WidgetStack} */
+		const offlineMessageStack = widget.addStack();
+		offlineMessageStack.addSpacer(null);
+		/** @type {WidgetText} */
+		const offlineMessageStackText = offlineMessageStack.addText(YOURE_OFFLINE);
+		offlineMessageStackText.font = Font.italicSystemFont(8);
+		offlineMessageStack.addSpacer(null);
+
+		return widget;
+	}
+
+	/**
+	 * Builds a widget with the given data.
+	 * @private
+	 * @param {string} title Comic title.
+	 * @param {number} ttl Minimum time, in minutes, after which the widget should update.
+	 * @param {Image} image Comic image to display.
+	 * @return {ListWidget} Pre-built widget.
+	 */
+	buildWidget(title, ttl, image = undefined) {
+		const widget = new ListWidget();
+		widget.refreshAfterDate = TimeUtil.getDateInNMinutes(ttl);
 
 		/** @type {WidgetStack} */
 		const titleStack = widget.addStack();
 		titleStack.addSpacer(null);
 		/** @type {WidgetText} */
-		const titleStackText = titleStack.addText("You're offline");
-		titleStackText.font = Font.italicSystemFont(8);
+		const titleStackText = titleStack.addText(title);
+		titleStackText.font = Font.headline();
 		titleStack.addSpacer(null);
+
+		if (image) {
+			/** @type {WidgetStack} */
+			const imageStack = widget.addStack();
+			imageStack.addSpacer(null);
+			imageStack.addImage(image);
+			imageStack.addSpacer(null);
+		}
 
 		return widget;
 	}
