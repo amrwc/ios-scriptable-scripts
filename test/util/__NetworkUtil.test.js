@@ -1,6 +1,6 @@
 const { NetworkUtil } = require('../../src/util/__NetworkUtil');
 
-class Request {
+class RequestMock {
 
 	#url
 
@@ -10,7 +10,7 @@ class Request {
 }
 
 beforeEach(() => {
-	global.Request = Request;
+	global.Request = RequestMock;
 });
 
 afterEach(() => {
@@ -18,7 +18,7 @@ afterEach(() => {
 })
 
 test.each([true, false])('Should have checked whether the device is online', async (isOnline) => {
-	Request.prototype.load = jest.fn().mockImplementation(async () => {
+	RequestMock.prototype.load = jest.fn().mockImplementation(async () => {
 		if (isOnline) {
 			return new Promise((resolve, reject) => {
 				resolve(true);
@@ -30,5 +30,5 @@ test.each([true, false])('Should have checked whether the device is online', asy
 
 	expect(await NetworkUtil.isOnline()).toBe(isOnline);
 
-	expect(Request.prototype.load).toHaveBeenCalled();
+	expect(RequestMock.prototype.load).toHaveBeenCalled();
 });
