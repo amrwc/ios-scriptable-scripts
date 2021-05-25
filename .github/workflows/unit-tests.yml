@@ -3,6 +3,7 @@ name: 'Unit Tests'
 on:
   push:
     paths:
+      - '.github/workflows/unit-tests.yml'
       - '**/*.js'
 
 jobs:
