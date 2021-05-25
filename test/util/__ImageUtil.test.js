@@ -14,8 +14,8 @@ test.each([JPG, PNG, 'unsupported'])('Should have got an empty string when base6
 
 	expect(ImageUtil.base64EncodeImage(null, type)).toBe('');
 
-	expect(Data.fromJPEG).toBeCalledTimes(JPG === type ? 1 : 0);
-	expect(Data.fromPNG).toBeCalledTimes(PNG === type ? 1 : 0);
+	expect(Data.fromJPEG).toHaveBeenCalledTimes(JPG === type ? 1 : 0);
+	expect(Data.fromPNG).toHaveBeenCalledTimes(PNG === type ? 1 : 0);
 });
 
 test.each([JPG, PNG])('Should have got a base64 encoded image', (type) => {
@@ -30,11 +30,11 @@ test.each([JPG, PNG])('Should have got a base64 encoded image', (type) => {
 	expect(ImageUtil.base64EncodeImage(image, type)).toBe(base64Str);
 
 	if (JPG === type) {
-		expect(Data.fromJPEG).toBeCalled();
-		expect(Data.fromJPEG).toBeCalledWith(image);
+		expect(Data.fromJPEG).toHaveBeenCalled();
+		expect(Data.fromJPEG).toHaveBeenCalledWith(image);
 	}
 	if (PNG === type) {
-		expect(Data.fromPNG).toBeCalled();
-		expect(Data.fromPNG).toBeCalledWith(image);
+		expect(Data.fromPNG).toHaveBeenCalled();
+		expect(Data.fromPNG).toHaveBeenCalledWith(image);
 	}
 });
