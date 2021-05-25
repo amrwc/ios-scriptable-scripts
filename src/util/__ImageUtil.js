@@ -2,6 +2,9 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: code;
 
+const JPG = 'jpg';
+const PNG = 'png';
+
 /**
  * Utility class for manipulating images.
  */
@@ -17,10 +20,10 @@ class ImageUtil {
 	static base64EncodeImage(image, type) {
 		let data;
 		switch (type) {
-			case 'jpg':
+			case JPG:
 				data = Data.fromJPEG(image);
 				break;
-			case 'png':
+			case PNG:
 				data = Data.fromPNG(image);
 				break;
 			default:
@@ -33,4 +36,6 @@ class ImageUtil {
 
 module.exports = {
 	ImageUtil,
+	JPG,
+	PNG,
 };

@@ -68,3 +68,55 @@ console.log(FeatureFlag.LOG_MODULE_IMPORTS); // true
 const { LOG_MODULE_IMPORTS } = importModule('__FeatureFlag');
 console.log(LOG_MODULE_IMPORTS); // true
 ```
+
+## Unit-testing
+
+```console
+yarn install
+yarn test
+```
+
+### Scriptable's propriety library
+
+Given the nature of Scriptable's propriety library, it's hard to unit test code
+that has uses references to static objects from the library.
+
+A workaround is to define the global object around the tests:
+
+```javascript
+beforeEach(() => {
+	global.Data = {};
+});
+
+afterEach(() => {
+	// Can probably get away with not deleting the global object, but it's here just to be safe.
+	delete global.Data;
+})
+```
+
+Or, a bit cleaner:
+
+```javascript
+beforeEach(() => {
+	Data = {};
+});
+```
+
+Then, used in tests:
+
+```javascript
+test.each([JPG, PNG, 'unsupported'])('Should have got an empty string when base64 encoding fails', (type) => {
+	Data.fromJPEG = jest.fn().mockReturnValueOnce(null);
+	Data.fromPNG = jest.fn().mockReturnValueOnce(null);
+
+	expect(ImageUtil.base64EncodeImage(null, type)).toBe('');
+
+	expect(Data.fromJPEG).toBeCalledTimes(JPG === type ? 1 : 0);
+	expect(Data.fromPNG).toBeCalledTimes(PNG === type ? 1 : 0);
+});
+```
+
+Resources on global variables in JavaScript:
+
+- <https://stackoverflow.com/q/6888570/10620237>
+- <https://stackoverflow.com/q/500431/10620237>
