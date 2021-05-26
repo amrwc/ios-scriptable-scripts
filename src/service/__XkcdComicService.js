@@ -2,6 +2,13 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: code;
 
+// If running outside of Scriptable environment...
+if (typeof config === 'undefined') {
+	// ... overwrite the `importModule()` global function.
+	const { ModuleUtil } = require('../../src/util/ModuleUtil');
+	global.importModule = moduleName => require(ModuleUtil.getModulePath(moduleName));
+}
+
 const { LOCAL_CACHE_DIRNAME, XKCD_CACHE_FILENAME } = importModule('__LocalPath');
 const { FileUtil } = importModule('__FileUtil');
 const { ImageUtil } = importModule('__ImageUtil');
@@ -23,7 +30,7 @@ class XkcdComicService {
 		const randomComicRequest = new Request(randomComicURL);
 		const { img: imageURL, title } = await randomComicRequest.loadJSON();
 
-		const imageRequest = await new Request(imageURL);
+		const imageRequest = new Request(imageURL);
 		const image = await imageRequest.loadImage();
 
 		return new XkcdComic(image, imageURL, title, randomComicNumber);
