@@ -1,5 +1,5 @@
-const { resolve } = require('path');
-const { readdir } = require('fs').promises;
+const fs = require('fs');
+const path = require('path');
 
 const { ModuleNotFoundError } = require('../error/ModuleNotFoundError');
 
@@ -7,6 +7,9 @@ const SRC = 'src';
 
 /**
  * Utility class for handling module importing outside of Scriptable environment.
+ * <p>
+ * NOTE: Scriptable will break if the <code>await</code> keyword is present before the <code>importModule()</code>
+ * method is called, no matter where and how it's defined. Therefore, keep the methods here synchronous.
  */
 class ModuleUtil {
 
@@ -15,11 +18,11 @@ class ModuleUtil {
 	 * @public
 	 * @param moduleName Name of the module.
 	 * @param fileExtension File extension of the module. Defaults to <code>'js'</code>.
-	 * @returns {Promise<string>} Path to the module.
+	 * @returns {string} Path to the module.
 	 * @throws ModuleNotFoundError in case the module has not been found.
 	 */
-	static async getModulePath(moduleName, fileExtension = 'js') {
-		const files = await this.listFiles(SRC);
+	static getModulePath(moduleName, fileExtension = 'js') {
+		const files = this.listFiles(SRC);
 		const filesFiltered = files.filter(path => path.includes(`${moduleName}.${fileExtension}`));
 		if (!filesFiltered) {
 			throw new ModuleNotFoundError(`Module '${moduleName}' has not been found`);
@@ -34,17 +37,16 @@ class ModuleUtil {
 	 * Lists absolute file paths in the given directory.
 	 * @private
 	 * @param {string} dir Directory path from root. E.g. <code>'src'</code>.
-	 * @returns {Promise<FlatArray<string>[]>} List of file paths.
+	 * @returns {FlatArray<string>[]} List of file paths.
 	 * @see Taken from <a href="https://stackoverflow.com/a/45130990/10620237">this SO answer</a>.
 	 */
-	static async listFiles(dir) {
-		const dirEntries = await readdir(dir, { withFileTypes: true });
-		const results = dirEntries.map(dirEntry => {
-			const res = resolve(dir, dirEntry.name);
+	static listFiles(dir) {
+		const dirEntries = fs.readdirSync(dir, { withFileTypes: true });
+		const filePaths = dirEntries.map(dirEntry => {
+			const res = path.resolve(dir, dirEntry.name);
 			return dirEntry.isDirectory() ? this.listFiles(res) : res;
 		});
-		const files = await Promise.all(results);
-		return files.flat();
+		return filePaths.flat();
 	}
 }
 

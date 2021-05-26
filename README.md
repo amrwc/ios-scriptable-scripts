@@ -33,6 +33,9 @@ NOTE: So far, I wasn't able to make nested paths working, so I put all
 dependencies in the main directory along the scripts. They have two underscores
 prepended in their names to be easily distinguishable in the app.
 
+NOTE 2: Only the modules with names starting with two underscores should be
+copied over.
+
 ### Class fields
 
 This doesn't work:
