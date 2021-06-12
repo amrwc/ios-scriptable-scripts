@@ -8,16 +8,16 @@
  *
  * Displays a random xkcd comic in a widget.
  *
- * It's a <em>heavily</em> modified version of
+ * Inspired by
  * <a href="https://gist.github.com/rudotriton/9d11ce1101ff1269f56844871b3fd536">rudotriton's script</a>.
  */
 
 // For development purposes. It displays the widget if run from the Scriptable app.
 const DEBUG = false;
 
-const { NetworkUtil } = importModule('__NetworkUtil');
-const { XkcdComicService } = importModule('__XkcdComicService');
-const { XkcdWidgetService } = importModule('__XkcdWidgetService');
+const { NetworkUtil } = importModule('lib/util/NetworkUtil');
+const { XkcdComicService } = importModule('lib/service/XkcdComicService');
+const { XkcdWidgetService } = importModule('lib/service/XkcdWidgetService');
 
 const comicService = new XkcdComicService();
 const widgetService = new XkcdWidgetService();
