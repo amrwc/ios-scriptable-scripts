@@ -8,7 +8,8 @@
 1. Save the script as a `.js` file.
 
    - Optionally, add Scriptable-specific directives at the top, similar to the
-     following:
+     following. Scriptable will do it automatically when the appearance will be
+     adjusted from within the app.
 
      ```JavaScript
      // Variables used by Scriptable.
@@ -20,35 +21,56 @@
 
 1. Put the file in the `Scriptable` directory in iCloud Drive.
 
-   The script should be visible inside the Scriptable app soon after.
-
-1. If using external modules, place them along the scripts. (Read more below.)
+   The script should be visible inside the Scriptable app immediately after
+   the directory has been synced.
 
 ## Importing modules
 
 [There's a module importing functionality](https://docs.scriptable.app/module)
 in the app.
 
-NOTE: So far, I wasn't able to make nested paths working, so I put all
-dependencies in the main directory along the scripts. They have two underscores
-prepended in their names to be easily distinguishable in the app.
+Simply create an `index.js` file in a directory, where the directory name is
+the module name. Take this directory structure for instance:
 
-NOTE 2: Only the modules with names starting with two underscores should be
-copied over.
+```text
+SomeScriptableScript.js
+lib/
+├─ service/
+│  ├─ FooBarService/
+│     ├─ index.js
+│  ├─ DifferentService/
+│     ├─ index.js
+```
+
+Then, you import the module like so:
+
+```javascript
+// SomeScriptableScript.js
+const FooBarService = importModule('lib/service/FooBarService');
+```
+
+Relative imports also work:
+
+```javascript
+// lib/service/DifferentService/index.js
+const FooBarService = importModule('../FooBarService');
+```
+
+## Known issues
 
 ### Class fields
 
 This doesn't work:
 
 ```javascript
-// __FeatureFlag.js
+// lib/const/FeatureFlag/index.js
 class FeatureFlag {
     static LOG_MODULE_IMPORTS = true;
 }
 module.exports = FeatureFlag;
 
 // Other file
-const FeatureFlag = importModule('__FeatureFlag');
+const FeatureFlag = importModule('lib/const/FeatureFlag');
 console.log(FeatureFlag.LOG_MODULE_IMPORTS); // undefined
 ```
 
@@ -58,17 +80,17 @@ unsupported in old browsers, which is what we might be dealing with here.
 Instead, place 'class constants' in `module.exports` directly:
 
 ```javascript
-// __FeatureFlag.js
+// lib/const/FeatureFlag/index.js
 module.exports = {
     LOG_MODULE_IMPORTS: true,
 };
 
 // Other file
-const FeatureFlag = importModule('__FeatureFlag');
+const FeatureFlag = importModule('lib/const/FeatureFlag');
 console.log(FeatureFlag.LOG_MODULE_IMPORTS); // true
 
 // Or, more concisely
-const { LOG_MODULE_IMPORTS } = importModule('__FeatureFlag');
+const { LOG_MODULE_IMPORTS } = importModule('lib/const/FeatureFlag');
 console.log(LOG_MODULE_IMPORTS); // true
 ```
 
@@ -82,9 +104,11 @@ yarn test
 ### Scriptable's propriety library
 
 Given the nature of Scriptable's propriety library, it's hard to unit test code
-that has uses references to static objects from the library.
+that has references to static objects from inside the library.
 
-A workaround is to define the global object around the tests:
+A workaround is to define global objects around the tests:
+
+<!-- markdownlint-disable MD010 -->
 
 ```javascript
 beforeEach(() => {
