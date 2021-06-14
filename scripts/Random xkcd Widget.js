@@ -15,14 +15,24 @@
 // For development purposes. It displays the widget if run from the Scriptable app.
 const DEBUG = false;
 
+const { FileUtil } = importModule('lib/util/FileUtil');
+const { ImageUtil } = importModule('lib/util/ImageUtil');
 const { NetworkUtil } = importModule('lib/util/NetworkUtil');
+const { NumberUtil } = importModule('lib/util/NumberUtil');
+const { TimeUtil } = importModule('lib/util/TimeUtil');
+
 const { XkcdComicService } = importModule('lib/service/XkcdComicService');
 const { XkcdWidgetService } = importModule('lib/service/XkcdWidgetService');
 
-const comicService = new XkcdComicService();
-const widgetService = new XkcdWidgetService();
+const comicService = new XkcdComicService(
+	new FileUtil(),
+	new ImageUtil(),
+	new NumberUtil()
+);
+const widgetService = new XkcdWidgetService(new TimeUtil());
 
-const IS_ONLINE = await NetworkUtil.isOnline();
+const networkUtil = new NetworkUtil();
+const IS_ONLINE = await networkUtil.isOnline();
 
 let comic;
 let widget;
