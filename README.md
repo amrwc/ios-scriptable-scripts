@@ -132,14 +132,16 @@ beforeEach(() => {
 Then, used in tests:
 
 ```javascript
-test.each([JPG, PNG, 'unsupported'])('Should have got an empty string when base64 encoding fails', (type) => {
-	Data.fromJPEG = jest.fn().mockReturnValueOnce(null);
-	Data.fromPNG = jest.fn().mockReturnValueOnce(null);
+describe('', () => {
+	it.each([JPG, PNG, 'unsupported'])('hould have got an empty string when base64 encoding fails', (type) => {
+		Data.fromJPEG = jest.fn().mockReturnValueOnce(null);
+		Data.fromPNG = jest.fn().mockReturnValueOnce(null);
 
-	expect(ImageUtil.base64EncodeImage(null, type)).toBe('');
+		expect(ImageUtil.base64EncodeImage(null, type)).toBe('');
 
-	expect(Data.fromJPEG).toBeCalledTimes(JPG === type ? 1 : 0);
-	expect(Data.fromPNG).toBeCalledTimes(PNG === type ? 1 : 0);
+		expect(Data.fromJPEG).toBeCalledTimes(JPG === type ? 1 : 0);
+		expect(Data.fromPNG).toBeCalledTimes(PNG === type ? 1 : 0);
+	});
 });
 ```
 
