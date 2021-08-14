@@ -108,39 +108,24 @@ that has references to static objects from inside the library.
 
 A workaround is to define global objects around the tests:
 
-<!-- markdownlint-disable MD010 -->
-
 ```javascript
-beforeEach(() => {
-	global.Data = {};
-});
-
-afterEach(() => {
-	// Can probably get away with not deleting the global object, but it's here just to be safe.
-	delete global.Data;
-})
-```
-
-Or, a bit cleaner:
-
-```javascript
-beforeEach(() => {
-	Data = {};
-});
+const Data = (global.Data = jest.fn());
 ```
 
 Then, used in tests:
 
 ```javascript
-describe('', () => {
-	it.each([JPG, PNG, 'unsupported'])('hould have got an empty string when base64 encoding fails', (type) => {
+const Data = (global.Data = jest.fn());
+
+describe('when base64-encoding an image', () => {
+	it.each([JPG, PNG, 'unsupported'])('should return an empty string when base64 encoding fails', (type) => {
 		Data.fromJPEG = jest.fn().mockReturnValueOnce(null);
 		Data.fromPNG = jest.fn().mockReturnValueOnce(null);
 
 		expect(ImageUtil.base64EncodeImage(null, type)).toBe('');
 
-		expect(Data.fromJPEG).toBeCalledTimes(JPG === type ? 1 : 0);
-		expect(Data.fromPNG).toBeCalledTimes(PNG === type ? 1 : 0);
+		expect(Data.fromJPEG).toBeCalledTimes('jpg' === type ? 1 : 0);
+		expect(Data.fromPNG).toBeCalledTimes('png' === type ? 1 : 0);
 	});
 });
 ```
