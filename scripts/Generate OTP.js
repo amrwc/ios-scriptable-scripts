@@ -8,7 +8,7 @@ const totp = new jsOTP.totp();
 
 const totpSecretPrompt = new Alert();
 totpSecretPrompt.title = 'TOTP Secret';
-totpSecretPrompt.addTextField();
+totpSecretPrompt.addSecureTextField();
 totpSecretPrompt.addCancelAction('Cancel');
 totpSecretPrompt.addAction('OK');
 if (-1 === (await totpSecretPrompt.present())) {
@@ -22,11 +22,14 @@ if (!totpSecretPrompt.textFieldValue(0)) {
 const totpSecret = totpSecretPrompt.textFieldValue(0);
 const otp = totp.getOtp(totpSecret);
 
-const alert = new Alert();
-alert.title = 'One-Time Password';
-alert.message = otp;
-alert.addAction('OK');
-await alert.present();
+const otpAlert = new Alert();
+otpAlert.title = 'One-Time Password';
+otpAlert.message = otp;
+otpAlert.addAction('Copy'); // index := 0
+otpAlert.addAction('OK'); // index := 1
+if (0 === (await otpAlert.present())) {
+	Pasteboard.copyString(otp);
+}
 
 async function presentError(message) {
 	const alert = new Alert();
