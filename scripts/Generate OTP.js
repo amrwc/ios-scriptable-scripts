@@ -3,23 +3,24 @@
 // icon-color: orange; icon-glyph: user-tie;
 // Generate OTP
 
-const { authenticator } = importModule('lib/node-modules/otplib');
+const { jsOTP } = importModule('lib/jsOTP');
+const totp = new jsOTP.totp();
 
-const secretPrompt = new Alert();
-secretPrompt.title = 'TOTP Secret';
-secretPrompt.addTextField();
-secretPrompt.addCancelAction('Cancel');
-secretPrompt.addAction('OK');
-if (-1 === (await secretPrompt.present())) {
+const totpSecretPrompt = new Alert();
+totpSecretPrompt.title = 'TOTP Secret';
+totpSecretPrompt.addTextField();
+totpSecretPrompt.addCancelAction('Cancel');
+totpSecretPrompt.addAction('OK');
+if (-1 === (await totpSecretPrompt.present())) {
 	return;
 }
-if (!secretPrompt.textFieldValue(0)) {
+if (!totpSecretPrompt.textFieldValue(0)) {
 	await presentError('TOTP secret must be provided');
 	return;
 }
 
-const secret = secretPrompt.textFieldValue(0);
-const otp = authenticator.generate(secret);
+const totpSecret = totpSecretPrompt.textFieldValue(0);
+const otp = totp.getOtp(totpSecret);
 
 const alert = new Alert();
 alert.title = 'One-Time Password';
