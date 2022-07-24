@@ -30,7 +30,6 @@ let comic;
 let widget;
 if (IS_ONLINE) {
 	comic = await comicService.getRandomComic();
-	comicService.cacheComic(comic);
 	widget = widgetService.createWidget(comic);
 } else {
 	widget = widgetService.createOfflineWidget();
