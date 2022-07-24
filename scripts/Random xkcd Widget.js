@@ -16,15 +16,13 @@
 const DEBUG = false;
 
 const { NetworkUtil } = importModule('lib/util/NetworkUtil');
-
 const { XkcdComicService } = importModule('lib/service/XkcdComicService');
 const { XkcdWidgetService } = importModule('lib/service/XkcdWidgetService');
 
 const comicService = new XkcdComicService();
 const widgetService = new XkcdWidgetService();
 
-const networkUtil = new NetworkUtil();
-const IS_ONLINE = await networkUtil.isOnline();
+const IS_ONLINE = await NetworkUtil.isOnline();
 
 let comic;
 let widget;
