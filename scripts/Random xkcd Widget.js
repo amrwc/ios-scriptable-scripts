@@ -16,28 +16,17 @@
 const DEBUG = false;
 
 const { NetworkUtil } = importModule('lib/util/NetworkUtil');
-const { XkcdComicService } = importModule('lib/service/XkcdComicService');
 const { XkcdWidgetService } = importModule('lib/service/XkcdWidgetService');
 
-const comicService = new XkcdComicService();
 const widgetService = new XkcdWidgetService();
 
-const IS_ONLINE = await NetworkUtil.isOnline();
-
-let comic;
-let widget;
-if (IS_ONLINE) {
-	comic = await comicService.getRandomComic();
-	widget = await widgetService.createWidget(comic);
-} else {
-	widget = widgetService.createOfflineWidget();
-}
+const widget = await widgetService.createWidget();
 
 if (config.runsInWidget) {
 	Script.setWidget(widget);
 	Script.complete();
 } else if (DEBUG) {
 	await widget.presentLarge();
-} else if (IS_ONLINE) {
-	Safari.open(comic.xkcdURL);
+} else if (await NetworkUtil.isOnline()) {
+	Safari.open(widget.url);
 }
