@@ -2,21 +2,15 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: cyan; icon-glyph: file-alt; share-sheet-inputs: plain-text, file-url;
 
+const { ErrorAlert } = importModule('lib/util/Alert');
+
 if (!args.plainTexts.length || !args.plainTexts[0]) {
-	const alert = new Alert()
-	alert.title = 'Error'
-	alert.message = 'No text has been supplied'
-	alert.addCancelAction('OK')
-	alert.present()
+	await ErrorAlert.presentError('No text has been supplied')
 	return
 }
 
 if (!args.fileURLs.length || !args.fileURLs[0]) {
-	const alert = new Alert()
-	alert.title = 'Error'
-	alert.message = 'No file URL has been supplied'
-	alert.addCancelAction('OK')
-	alert.present()
+	await ErrorAlert.presentError('No file URL has been supplied')
 	return
 }
 
