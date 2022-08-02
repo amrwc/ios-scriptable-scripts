@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: cyan; icon-glyph: file-alt; share-sheet-inputs: plain-text, file-url;
 
-const { ErrorAlert } = importModule('lib/util/Alert');
+const { ErrorAlert } = importModule('lib/util/Alert')
 
 if (!args.plainTexts.length || !args.plainTexts[0]) {
 	await ErrorAlert.presentError('No text has been supplied')
@@ -25,8 +25,9 @@ async function presentEditPrompt(table, lines, i) {
 	alert.addAction('Save')
 	const actionIndex = await alert.present()
 
-	if (actionIndex === 0 || lines[i] === alert.textFieldValue(0)) {
-		// No changes made, present the old table  
+	const hasBeenDiscarded = actionIndex === 0
+	const hasNotBeenChanged = lines[i] === alert.textFieldValue(0)
+	if (hasBeenDiscarded || hasNotBeenChanged) {
 		await table.present(true)
 		return
 	}
