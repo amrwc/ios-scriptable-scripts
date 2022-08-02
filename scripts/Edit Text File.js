@@ -17,7 +17,7 @@ if (!args.fileURLs.length || !args.fileURLs[0]) {
 const text = args.plainTexts[0]
 const fileURL = args.fileURLs[0]
 
-async function presentAlert(table, lines, i) {
+async function presentEditPrompt(table, lines, i) {
 	const alert = new Alert()
 	alert.title = 'Edit line'
 	alert.addTextField('', lines[i])
@@ -32,20 +32,19 @@ async function presentAlert(table, lines, i) {
 	}
 
 	lines[i] = alert.textFieldValue(0)
-	const newTable = buildTable(lines)
-	await newTable.present(true)
+	await presentTable(lines)
 }
 
 function buildRow(table, lines, i) {
 	const row = new UITableRow()
 	row.addText(lines[i], null)
 	row.onSelect = async () => {
-		await presentAlert(table, lines, i)
+		await presentEditPrompt(table, lines, i)
 	}
 	return row
 }
 
-function buildTable(lines = []) {
+async function presentTable(lines = []) {
 	const table = new UITable()
 	for (let i = 0; i < lines.length; i++) {
 		table.addRow(buildRow(table, lines, i))
@@ -53,13 +52,9 @@ function buildTable(lines = []) {
 
 	const saveFileRow = new UITableRow()
 	saveFileRow.addButton('Save file')
-	saveFileRow.onSelect(() => {
-
-	})
 	table.addRow(saveFileRow)
 
-	return table
+	await table.present(true)
 }
 
-const table = buildTable(text.split('\n'))
-await table.present(true)
+await presentTable(text.split('\n'))
