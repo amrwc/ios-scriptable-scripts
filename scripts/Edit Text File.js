@@ -29,7 +29,15 @@ function createTable(lines) {
 	}
 
 	const saveFileRow = new UITableRow()
-	saveFileRow.addButton('Save file')
+	const cancelCell = saveFileRow.addButton('Cancel')
+	cancelCell.onTap = () => {
+		Script.complete()
+	}
+	const saveCell = saveFileRow.addButton('Overwrite file')
+	saveCell.rightAligned()
+	saveCell.onTap = () => {
+		onTapSave(lines)
+	}
 	table.addRow(saveFileRow)
 
 	return table
@@ -74,6 +82,26 @@ function createEditPrompt(line) {
 
 function hasRowChanged(line, actionIndex, textFieldValue) {
 	return actionIndex !== 0 && line !== textFieldValue
+}
+
+async function onTapSave(lines) {
+	if (!await hasConfirmed()) {
+		return
+	}
+
+	const newContent = lines.join('\n').trim() + '\n'
+	const fileManager = FileManager.iCloud()
+	fileManager.writeString(fileURL, newContent)
+	Script.complete()
+}
+
+async function hasConfirmed() {
+	const alert = new Alert()
+	alert.title = 'Are you sure you want to overwrite the file contents?'
+	alert.addAction('No')
+	alert.addDestructiveAction('Yes')
+	const actionIndex = await alert.present()
+	return actionIndex === 1
 }
 
 await presentTable(text.split('\n'))
