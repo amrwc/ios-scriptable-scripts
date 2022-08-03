@@ -17,45 +17,63 @@ if (!args.fileURLs.length || !args.fileURLs[0]) {
 const text = args.plainTexts[0]
 const fileURL = args.fileURLs[0]
 
-async function presentEditPrompt(table, lines, i) {
-	const alert = new Alert()
-	alert.title = 'Edit line'
-	alert.addTextField('', lines[i])
-	alert.addDestructiveAction('Discard')
-	alert.addAction('Save')
-	const actionIndex = await alert.present()
-
-	const hasBeenDiscarded = actionIndex === 0
-	const hasNotBeenChanged = lines[i] === alert.textFieldValue(0)
-	if (hasBeenDiscarded || hasNotBeenChanged) {
-		await table.present(true)
-		return
-	}
-
-	lines[i] = alert.textFieldValue(0)
-	await presentTable(lines)
-}
-
-function buildRow(table, lines, i) {
-	const row = new UITableRow()
-	row.addText(lines[i], null)
-	row.onSelect = async () => {
-		await presentEditPrompt(table, lines, i)
-	}
-	return row
-}
-
 async function presentTable(lines = []) {
+	await createTable(lines).present(true)
+}
+
+function createTable(lines) {
 	const table = new UITable()
-	for (let i = 0; i < lines.length; i++) {
-		table.addRow(buildRow(table, lines, i))
+
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+		table.addRow(createRow(table, lines, lineIndex))
 	}
 
 	const saveFileRow = new UITableRow()
 	saveFileRow.addButton('Save file')
 	table.addRow(saveFileRow)
 
-	await table.present(true)
+	return table
+}
+
+function createRow(table, lines, lineIndex) {
+	const row = new UITableRow()
+	row.addText(lines[lineIndex], null)
+	row.onSelect = async () => {
+		await onSelectRow(table, lines, lineIndex)
+	}
+	return row
+}
+
+async function onSelectRow(table, lines, lineIndex) {
+	const line = lines[lineIndex]
+	const [actionIndex, textFieldValue] = await presentEditPrompt(line)
+
+	if (hasRowChanged(line, actionIndex, textFieldValue)) {
+		lines[lineIndex] = textFieldValue
+		await presentTable(lines)
+	} else {
+		await table.present(true)
+	}
+}
+
+async function presentEditPrompt(line) {
+	const alert = createEditPrompt(line)
+	const actionIndex = await alert.present()
+
+	return [actionIndex, alert.textFieldValue(0)]
+}
+
+function createEditPrompt(line) {
+	const alert = new Alert()
+	alert.title = 'Edit line'
+	alert.addTextField('', line)
+	alert.addDestructiveAction('Discard')
+	alert.addAction('Save')
+	return alert
+}
+
+function hasRowChanged(line, actionIndex, textFieldValue) {
+	return actionIndex !== 0 && line !== textFieldValue
 }
 
 await presentTable(text.split('\n'))
