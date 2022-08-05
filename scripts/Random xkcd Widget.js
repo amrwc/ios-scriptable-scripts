@@ -15,7 +15,7 @@
 // For development purposes. It displays the widget if run from the Scriptable app.
 const DEBUG = false
 
-const { NetworkUtil } = importModule('lib/util/NetworkUtil')
+const { NetworkUtil } = importModule('lib/util/Network')
 const { XkcdWidgetService } = importModule('lib/xkcd')
 
 const widgetService = new XkcdWidgetService()
