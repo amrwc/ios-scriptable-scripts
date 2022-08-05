@@ -13,20 +13,20 @@
  */
 
 // For development purposes. It displays the widget if run from the Scriptable app.
-const DEBUG = false;
+const DEBUG = false
 
-const { NetworkUtil } = importModule('lib/util/NetworkUtil');
-const { XkcdWidgetService } = importModule('lib/service/XkcdWidgetService');
+const { NetworkUtil } = importModule('lib/util/NetworkUtil')
+const { XkcdWidgetService } = importModule('lib/xkcd')
 
-const widgetService = new XkcdWidgetService();
+const widgetService = new XkcdWidgetService()
 
-const widget = await widgetService.createWidget();
+const widget = await widgetService.createWidget()
 
 if (config.runsInWidget) {
-	Script.setWidget(widget);
-	Script.complete();
+	Script.setWidget(widget)
+	Script.complete()
 } else if (DEBUG) {
-	await widget.presentLarge();
+	await widget.presentLarge()
 } else if (await NetworkUtil.isOnline()) {
-	Safari.open(widget.url);
+	Safari.open(widget.url)
 }
