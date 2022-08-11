@@ -13,42 +13,20 @@
  */
 
 // For development purposes. It displays the widget if run from the Scriptable app.
-const DEBUG = false;
+const DEBUG = false
 
-const { FileUtil } = importModule('lib/util/FileUtil');
-const { ImageUtil } = importModule('lib/util/ImageUtil');
-const { NetworkUtil } = importModule('lib/util/NetworkUtil');
-const { NumberUtil } = importModule('lib/util/NumberUtil');
-const { TimeUtil } = importModule('lib/util/TimeUtil');
+const { NetworkUtil } = importModule('lib/util/Network')
+const { XkcdWidgetService } = importModule('lib/xkcd')
 
-const { XkcdComicService } = importModule('lib/service/XkcdComicService');
-const { XkcdWidgetService } = importModule('lib/service/XkcdWidgetService');
+const widgetService = new XkcdWidgetService()
 
-const comicService = new XkcdComicService(
-	new FileUtil(),
-	new ImageUtil(),
-	new NumberUtil()
-);
-const widgetService = new XkcdWidgetService(new TimeUtil());
-
-const networkUtil = new NetworkUtil();
-const IS_ONLINE = await networkUtil.isOnline();
-
-let comic;
-let widget;
-if (IS_ONLINE) {
-	comic = await comicService.getRandomComic();
-	comicService.cacheComic(comic);
-	widget = widgetService.createWidget(comic);
-} else {
-	widget = widgetService.createOfflineWidget();
-}
+const widget = await widgetService.createWidget()
 
 if (config.runsInWidget) {
-	Script.setWidget(widget);
-	Script.complete();
+	Script.setWidget(widget)
+	Script.complete()
 } else if (DEBUG) {
-	await widget.presentLarge();
-} else if (IS_ONLINE) {
-	Safari.open(comic.xkcdURL);
+	await widget.presentLarge()
+} else if (await NetworkUtil.isOnline()) {
+	Safari.open(widget.url)
 }
